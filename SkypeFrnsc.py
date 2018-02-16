@@ -86,6 +86,7 @@ def account_infos(cur):
     return toFile
 
 def calls_list(cur):
+    calls = ""
     for row in cur.execute('SELECT * FROM Calls'):
         calls += "host = " + row[6] + " | dest = " + row[39] + " | time = " +
         row[8] if row[8] > 0 else ""
