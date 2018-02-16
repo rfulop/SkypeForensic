@@ -21,7 +21,6 @@ def get_contacts(cur):
         toFile += row[0] + "\n"
     return toFile
 
-
 def show_contacts(cur):
     contacts = get_contacts(cur)
     print(contacts)
@@ -49,7 +48,6 @@ def get_conv(cur, contact):
         row = date + " " + author + ": " + text + "\n";
         conv += row
     return conv
-
 
 def conv_from_cont(cur):
     print("\n" + get_contacts(cur))
@@ -85,6 +83,30 @@ def account_infos(cur):
     choice = input("Do you want to save this profil infos ? (y/n) :")
     if choice == 'y':
         save_data(toFile, "_infos")
+    return toFile
+
+def calls_list(cur):
+    for row in cur.execute('SELECT * FROM Calls'):
+        calls += "host = " + row[6] + " | dest = " + row[39] + " | time = " +
+        row[8] if row[8] > 0 else ""
+        calls += "\n"
+    print(calls)
+    choice = input("Do you want to save calls list ? (y/n) : ")
+    if choice == 'y':
+        save_data(calls, "_calls")
+    return calls
+
+
+def save_all(cur):
+    datas = account_infos(cur) + "\n\n\n 1 -------\n"
+    datas += get_contacts(cur) + "\n\n\n 2 --------\n"
+    datas += "\n\n 3 -------\n"
+    for row in cur.execute('SELECT * FROM Contacts'):
+        datas += "\t\t" + get_conv(cur, row[3]) + "\n\n"
+    datas += calls_list(cur)
+    choice = input("Do you want to save all datas ? (y/n) :")
+    if choice == 'y':
+        save_data(datas, "_datas")
 
 print("Finding Skype accounts...\n")
 cmd = os.popen("find /root/.Skype/*/main.db")
@@ -97,7 +119,6 @@ for i, path in enumerate(paths):
         accountName = path.split("Skype/")[1]
         print(str(i) + " - " + accountName[:-8])
 pick = int(input("\nSelect an account : "))
-
 
 con = lite.connect(paths[pick])
 cur = con.cursor()
@@ -112,6 +133,8 @@ while True:
     print("1 - Account infos")
     print("2 - Show contacts")
     print("3 - Show Conversation from contact")
+    print("4 - List of calls")
+    print("5 - Save all data")
     choice = int(input("\nWhat do you want to do ? "))
     if choice == 0:
         sys.exit()
@@ -121,3 +144,7 @@ while True:
         show_contacts(cur)
     if choice == 3:
         conv_from_cont(cur)
+    if choice == 4:
+        calls_list(cur)
+    if choice == 5:
+        save_all(cur)
