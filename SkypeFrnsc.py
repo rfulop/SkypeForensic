@@ -88,15 +88,14 @@ def account_infos(cur):
 def calls_list(cur):
     calls = ""
     for row in cur.execute('SELECT * FROM Calls'):
-        calls += "host = " + row[6] + " | dest = " + row[39] + " | time = " +
-        row[8] if row[8] > 0 else ""
+        calls += "host = " + row[6] + " | dest = " + row[39] + " | time = "
+        + row[8] if row[8] > 0 else ""
         calls += "\n"
     print(calls)
     choice = input("Do you want to save calls list ? (y/n) : ")
     if choice == 'y':
         save_data(calls, "_calls")
     return calls
-
 
 def save_all(cur):
     datas = account_infos(cur) + "\n\n\n 1 -------\n"
@@ -113,6 +112,9 @@ print("Finding Skype accounts...\n")
 cmd = os.popen("find /root/.Skype/*/main.db")
 r = cmd.read()
 paths = r.split('\n')
+if not paths:
+    print("0 account found")
+print(paths)
 
 print('Accounts found:')
 for i, path in enumerate(paths):
