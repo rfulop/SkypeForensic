@@ -4,6 +4,27 @@ import datetime
 import sqlite3 as lite
 import pandas as pd
 
+import logging
+import argparse
+
+def create_logger(verbose):
+    form = '%(levelname)s: %(message)s'
+    if verbose is None:
+        logging.basicConfig(format='%(message)s', level=logging.CRITICAL)
+    if verbose == 1:
+        logging.basicConfig(format=form, level=logging.ERROR)
+    if verbose == 2:
+        logging.basicConfig(format=form, level=logging.WARNING)
+    if verbose == 3:
+        logging.basicConfig(format=form, level=logging.DEBUG)
+
+
+def create_parser():
+    parser = argparse.ArgumentParser()
+    parser.add_argument('-v', '--verbose', action='count')
+    args = parser.parse_args()
+    return args
+
 def decodeXML(text):
     text = text.replace("&amp;apos;", "\'")
     text = text.replace("&apos;", "\'")
@@ -107,6 +128,9 @@ def save_all(cur):
     choice = input("Do you want to save all datas ? (y/n) :")
     if choice == 'y':
         save_data(datas, "_datas")
+
+args = create_parser()
+create_logger(args.verbose)
 
 print("Finding Skype accounts...\n")
 cmd = os.popen("find /root/.Skype/*/main.db")
